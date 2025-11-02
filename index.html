@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI7 STORE - Game API Tools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --malaysia-blue: #0033A0;
+            --malaysia-red: #CC0001;
+            --malaysia-yellow: #FFCC00;
+            --purple-color: #9b59b6;
+            --purple-light: #a569bd;
+            --purple-dark: #7d3c98;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--purple-light), var(--purple-dark));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Malaysia Flag Pattern Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+
+        /* Malaysia Flag Corner */
+        .flag-corner {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: var(--purple-dark);
+            clip-path: polygon(100% 0, 0 0, 100% 100%);
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .flag-corner::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: 
+                radial-gradient(circle at 50% 50%, var(--malaysia-yellow) 20%, transparent 20%),
+                linear-gradient(45deg, transparent 49.5%, var(--malaysia-yellow) 49.5%, var(--malaysia-yellow) 50.5%, transparent 50.5%),
+                linear-gradient(-45deg, transparent 49.5%, var(--malaysia-yellow) 49.5%, var(--malaysia-yellow) 50.5%, transparent 50.5%);
+            opacity: 0.8;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 1rem 2rem;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            background: linear-gradient(45deg, white, var(--malaysia-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--purple-light), var(--purple-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background-color: rgba(40, 167, 69, 0.2);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .status-indicator.offline {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: white;
+        }
+
+        .status-indicator i {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            padding: 2rem;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            width: 100%;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--purple-light), var(--purple-dark));
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .left-panel {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .right-panel {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        h1, h2 {
+            color: white;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        h1::after, h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--malaysia-yellow), white);
+            border-radius: 3px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        input[type="text"], input[type="password"], input[type="number"], select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        input[type="text"]::placeholder, input[type="password"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, select:focus {
+            border-color: var(--malaysia-yellow);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            background: linear-gradient(45deg, var(--purple-light), var(--purple-dark));
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(123, 60, 152, 0.3);
+        }
+
+        button:disabled {
+            background: var(--secondary-color);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        button.secondary {
+            background: linear-gradient(45deg, var(--secondary-color), #5a6268);
+        }
+
+        button.success {
+            background: linear-gradient(45deg, var(--success-color), #218838);
+        }
+
+        button.danger {
+            background: linear-gradient(45deg, var(--danger-color), #c82333);
+        }
+
+        button.warning {
+            background: linear-gradient(45deg, var(--warning-color), #e0a800);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        button.loading .loading-spinner {
+            display: inline-block;
+        }
+
+        button.loading .button-text {
+            display: none;
+        }
+
+        .status {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-top: 1.5rem;
+            text-align: center;
+            font-weight: 500;
+            white-space: pre-line;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status.success {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .status.error {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: white;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .status.info {
+            background-color: rgba(23, 162, 184, 0.2);
+            color: white;
+            border: 1px solid rgba(23, 162, 184, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+            font-weight: 500;
+            color: white;
+        }
+
+        .tab:hover {
+            background-color: rgba(123, 60, 152, 0.2);
+        }
+
+        .tab.active {
+            color: var(--malaysia-yellow);
+            border-bottom-color: var(--malaysia-yellow);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .car-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .car-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            color: white;
+        }
+
+        .car-item:last-child {
+            border-bottom: none;
+        }
+
+        .car-item:hover {
+            background-color: rgba(123, 60, 152, 0.1);
+        }
+
+        .car-item input {
+            margin-right: 0.75rem;
+        }
+
+        .car-item label {
+            flex-grow: 1;
+            cursor: pointer;
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-buttons button {
+            flex: 1;
+        }
+
+        .progress-bar {
+            height: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple-light), var(--purple-dark));
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--malaysia-yellow);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: white;
+            margin-top: 0.25rem;
+        }
+
+        .debug-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: white;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 1rem;
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* WhatsApp/Telegram Style Notification */
+        .notification-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .notification {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px) scale(0.9);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .notification.show {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .notification.success .notification-icon {
+            background: rgba(40, 167, 69, 0.2);
+            color: #4CAF50;
+        }
+
+        .notification.error .notification-icon {
+            background: rgba(220, 53, 69, 0.2);
+            color: #F44336;
+        }
+
+        .notification.info .notification-icon {
+            background: rgba(23, 162, 184, 0.2);
+            color: #2196F3;
+        }
+
+        .notification-icon i {
+            font-size: 20px;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+            font-size: 16px;
+        }
+
+        .notification-message {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .notification-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .notification-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--purple-light), var(--purple-dark));
+            border-radius: 0 0 0 12px;
+            width: 100%;
+            transform-origin: left;
+            animation: notificationProgress 3s linear forwards;
+        }
+
+        @keyframes notificationProgress {
+            from { transform: scaleX(1); }
+            to { transform: scaleX(0); }
+        }
+
+        .king-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .king-feature {
+            background: rgba(123, 60, 152, 0.2);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .king-feature:hover {
+            background: rgba(123, 60, 152, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .king-feature i {
+            font-size: 2rem;
+            color: var(--malaysia-yellow);
+            margin-bottom: 0.5rem;
+        }
+
+        .king-feature h3 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            color: white;
+        }
+
+        .king-feature p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .logout-btn {
+            background: linear-gradient(45deg, var(--danger-color), #c82333);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .loading-spinner-large {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--malaysia-yellow);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto 1rem;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .loading-progress {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple-light), var(--purple-dark));
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        .loading-percentage {
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        /* Admin Info */
+        .admin-info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 999;
+            transition: var(--transition);
+        }
+
+        .admin-info:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--purple-light), var(--purple-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .admin-details h3 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            color: var(--malaysia-yellow);
+        }
+
+        .admin-details p {
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        .admin-details a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .admin-details a:hover {
+            color: var(--malaysia-yellow);
+        }
+
+        /* Donation Button */
+        .donation-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--malaysia-yellow), #FFD700);
+            color: var(--purple-dark);
+            border-radius: 50px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.4);
+            z-index: 999;
+            transition: var(--transition);
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .donation-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 204, 0, 0.6);
+        }
+
+        .donation-btn i {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                max-width: 100%;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .king-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-info {
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+            }
+            
+            .donation-btn {
+                bottom: auto;
+                top: 80px;
+                right: 10px;
+                padding: 10px 15px;
+            }
+            
+            .notification {
+                min-width: 280px;
+                padding: 14px 16px;
+            }
+            
+            .notification-icon {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .notification-icon i {
+                font-size: 18px;
+            }
+            
+            .notification-title {
+                font-size: 15px;
+            }
+            
+            .notification-message {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="flag-corner"></div>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner-large"></div>
+            <div class="loading-text" id="loadingText">Memproses...</div>
+            <div class="loading-progress">
+                <div class="loading-progress-bar" id="loadingProgressBar"></div>
+            </div>
+            <div class="loading-percentage" id="loadingPercentage">0%</div>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-store"></i>
+                <span>SAI7 STORE</span>
+            </div>
+            <div class="user-info hidden" id="userInfo">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="userEmail">user@example.com</span>
+                <button id="logoutBtn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+            <div class="status-indicator" id="connectionStatus">
+                <i class="fas fa-circle"></i>
+                <span>Online</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="left-panel container">
+            <h1><i class="fas fa-sign-in-alt"></i> Login</h1>
+            
+            <div id="statusBox" class="status info">
+                <i class="fas fa-info-circle"></i>
+                <span>Masuk untuk melanjutkan.</span>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Email:</label>
+                    <input type="text" id="email" name="email" required placeholder="nama@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Password:</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" id="loginButton">
+                    <span class="button-text"><i class="fas fa-sign-in-alt"></i> Login</span>
+                    <div class="loading-spinner"></div>
+                </button>
+            </form>
+
+            <div id="actionArea" class="hidden">
+                <h2><i class="fas fa-cogs"></i> Aksi</h2>
+                <div class="action-buttons">
+                    <button id="fetchCarsButton" class="success">
+                        <span class="button-text"><i class="fas fa-download"></i> Ambil Data</span>
+                        <div class="loading-spinner"></div>
+                    </button>
+                    <button id="injectAllButton" class="secondary">
+                        <span class="button-text"><i class="fas fa-upload"></i> Inject Semua</span>
+                        <div class="loading-spinner"></div>
+                    </button>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div class="stats hidden" id="statsArea">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCars">0</div>
+                    <div class="stat-label">Total Mobil</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="selectedCars">0</div>
+                    <div class="stat-label">Dipilih</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="injectedCars">0</div>
+                    <div class="stat-label">Di-inject</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="container hidden" id="carListContainer">
+                <h2><i class="fas fa-car"></i> Daftar Mobil</h2>
+                
+                <div class="tabs">
+                    <div class="tab active" data-tab="all">Semua</div>
+                    <div class="tab" data-tab="selected">Dipilih</div>
+                </div>
+                
+                <div class="tab-content active" id="allTab">
+                    <div class="car-list" id="carList"></div>
+                </div>
+                
+                <div class="tab-content" id="selectedTab">
+                    <div class="car-list" id="selectedCarList"></div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="injectSelectedButton" class="success">
+                        <span class="button-text"><i class="fas fa-upload"></i> Inject Terpilih</span>
+                        <div class="loading-spinner"></div>
+                    </button>
+                    <button id="selectAllButton" class="secondary">
+                        <span class="button-text"><i class="fas fa-check-square"></i> Pilih Semua</span>
+                        <div class="loading-spinner"></div>
+                    </button>
+                    <button id="deselectAllButton" class="secondary">
+                        <span class="button-text"><i class="fas fa-square"></i> Hapus Pilihan</span>
+                        <div class="loading-spinner"></div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="container hidden" id="kingContainer">
+                <h2><i class="fas fa-crown"></i> Inject King</h2>
+                
+                <button id="injectKingButton" class="warning" style="width: 100%; margin-top: 1rem;">
+                    <span class="button-text"><i class="fas fa-crown"></i> Inject King (Auto)</span>
+                    <div class="loading-spinner"></div>
+                </button>
+                
+                <div class="progress-bar">
+                    <div class="progress" id="kingProgressBar"></div>
+                </div>
+            </div>
+
+            <div class="container hidden" id="debugContainer">
+                <h2><i class="fas fa-bug"></i> Debug Info</h2>
+                <div class="debug-info" id="debugInfo"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 SAI7 STORE - Game API Tools. All rights reserved.</p>
+    </footer>
+
+    <!-- Admin Info -->
+    <div class="admin-info">
+        <div class="admin-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="admin-details">
+            <h3>Admin / Pembuat</h3>
+            <p>Telegram: <a href="https://t.me/ESPO_STORE" target="_blank">@ESPO_STORE</a></p>
+        </div>
+    </div>
+
+    <!-- Donation Button -->
+    <a href="https://saweria.co/ESPOSTORE" target="_blank" class="donation-btn">
+        <i class="fas fa-heart"></i>
+        <span>Donasi</span>
+    </a>
+
+    <!-- WhatsApp/Telegram Style Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const statusBox = document.getElementById('statusBox');
+            const loginForm = document.getElementById('loginForm');
+            const loginButton = document.getElementById('loginButton');
+            const actionArea = document.getElementById('actionArea');
+            const carListContainer = document.getElementById('carListContainer');
+            const kingContainer = document.getElementById('kingContainer');
+            const carList = document.getElementById('carList');
+            const selectedCarList = document.getElementById('selectedCarList');
+            const fetchCarsButton = document.getElementById('fetchCarsButton');
+            const injectAllButton = document.getElementById('injectAllButton');
+            const injectSelectedButton = document.getElementById('injectSelectedButton');
+            const selectAllButton = document.getElementById('selectAllButton');
+            const deselectAllButton = document.getElementById('deselectAllButton');
+            const injectKingButton = document.getElementById('injectKingButton');
+            const progressBar = document.getElementById('progressBar');
+            const kingProgressBar = document.getElementById('kingProgressBar');
+            const statsArea = document.getElementById('statsArea');
+            const totalCarsElement = document.getElementById('totalCars');
+            const selectedCarsElement = document.getElementById('selectedCars');
+            const injectedCarsElement = document.getElementById('injectedCars');
+            const debugContainer = document.getElementById('debugContainer');
+            const debugInfo = document.getElementById('debugInfo');
+            const connectionStatus = document.getElementById('connectionStatus');
+            const notificationContainer = document.getElementById('notificationContainer');
+            const userInfo = document.getElementById('userInfo');
+            const userEmail = document.getElementById('userEmail');
+            const userAvatar = document.getElementById('userAvatar');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            // Loading overlay elements
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingText = document.getElementById('loadingText');
+            const loadingProgressBar = document.getElementById('loadingProgressBar');
+            const loadingPercentage = document.getElementById('loadingPercentage');
+
+            let idToken = '';
+            let allCarsData = [];
+            let injectedCount = 0;
+            let currentUserEmail = '';
+            let notificationTimeout;
+
+            // Tab functionality
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const parent = tab.parentElement;
+                    const parentTabs = parent.querySelectorAll('.tab');
+                    const parentContents = parent.parentElement.querySelectorAll('.tab-content');
+                    
+                    parentTabs.forEach(t => t.classList.remove('active'));
+                    parentContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.tab}Tab`).classList.add('active');
+                });
+            });
+
+            // Show WhatsApp/Telegram style notification
+            function showNotification(title, message, type = 'info', duration = 3000) {
+                // Clear any existing timeout
+                if (notificationTimeout) {
+                    clearTimeout(notificationTimeout);
+                }
+                
+                // Remove any existing notification
+                const existingNotification = notificationContainer.querySelector('.notification');
+                if (existingNotification) {
+                    notificationContainer.removeChild(existingNotification);
+                }
+                
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                
+                // Set icon based on type
+                let iconClass;
+                if (type === 'success') {
+                    iconClass = 'fa-check-circle';
+                } else if (type === 'error') {
+                    iconClass = 'fa-exclamation-circle';
+                } else {
+                    iconClass = 'fa-info-circle';
+                }
+                
+                notification.innerHTML = `
+                    <div class="notification-icon">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-message">${message}</div>
+                    </div>
+                    <button class="notification-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="notification-progress"></div>
+                `;
+                
+                // Add to container
+                notificationContainer.appendChild(notification);
+                
+                // Add close button event
+                const closeBtn = notification.querySelector('.notification-close');
+                closeBtn.addEventListener('click', () => {
+                    hideNotification(notification);
+                });
+                
+                // Show notification with animation
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 10);
+                
+                // Auto hide after duration
+                notificationTimeout = setTimeout(() => {
+                    hideNotification(notification);
+                }, duration);
+            }
+            
+            // Hide notification
+            function hideNotification(notification) {
+                notification.classList.remove('show');
+                
+                // Remove from DOM after animation completes
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }
+
+            // Update progress bar
+            function updateProgress(percentage, bar = progressBar) {
+                bar.style.width = `${percentage}%`;
+            }
+
+            // Update stats
+            function updateStats() {
+                totalCarsElement.textContent = allCarsData.length;
+                selectedCarsElement.textContent = getSelectedCarIds().length;
+                injectedCarsElement.textContent = injectedCount;
+            }
+
+            // Show status
+            function showStatus(message, type = 'info', debugInfo = null) {
+                statusBox.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                statusBox.className = `status ${type}`;
+                
+                if (debugInfo) {
+                    debugInfo.textContent = debugInfo;
+                    debugContainer.classList.remove('hidden');
+                } else {
+                    debugContainer.classList.add('hidden');
+                }
+            }
+
+            // Show loading overlay
+            function showLoadingOverlay(text = 'Memproses...') {
+                loadingText.textContent = text;
+                loadingOverlay.classList.add('active');
+                updateLoadingProgress(0);
+            }
+
+            // Hide loading overlay
+            function hideLoadingOverlay() {
+                loadingOverlay.classList.remove('active');
+            }
+
+            // Update loading progress
+            function updateLoadingProgress(percentage) {
+                loadingProgressBar.style.width = `${percentage}%`;
+                loadingPercentage.textContent = `${percentage}%`;
+            }
+
+            // Set button loading state
+            function setButtonLoading(button, isLoading) {
+                if (isLoading) {
+                    button.classList.add('loading');
+                    button.disabled = true;
+                } else {
+                    button.classList.remove('loading');
+                    button.disabled = false;
+                }
+            }
+
+            // Check connection status
+            function checkConnectionStatus() {
+                fetch('https://www.googleapis.com', { mode: 'no-cors' })
+                    .then(() => {
+                        connectionStatus.classList.remove('offline');
+                        connectionStatus.innerHTML = `
+                            <i class="fas fa-circle"></i>
+                            <span>Online</span>
+                        `;
+                    })
+                    .catch(() => {
+                        connectionStatus.classList.add('offline');
+                        connectionStatus.innerHTML = `
+                            <i class="fas fa-circle"></i>
+                            <span>Offline</span>
+                        `;
+                    });
+            }
+
+            // Check connection every 5 seconds
+            setInterval(checkConnectionStatus, 5000);
+            checkConnectionStatus();
+
+            // Update user info
+            function updateUserInfo(email) {
+                currentUserEmail = email;
+                userEmail.textContent = email;
+                userAvatar.textContent = email.charAt(0).toUpperCase();
+                userInfo.classList.remove('hidden');
+            }
+
+            // Logout function
+            function logout() {
+                idToken = '';
+                currentUserEmail = '';
+                allCarsData = [];
+                injectedCount = 0;
+                
+                // Reset UI
+                loginForm.classList.remove('hidden');
+                actionArea.classList.add('hidden');
+                carListContainer.classList.add('hidden');
+                kingContainer.classList.add('hidden');
+                statsArea.classList.add('hidden');
+                userInfo.classList.add('hidden');
+                
+                // Reset form
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                
+                showStatus('Anda telah keluar. Silakan login kembali.', 'info');
+                showNotification('Info', 'Anda telah keluar. Silakan login kembali.', 'info');
+            }
+
+            async function callApi(action, data = {}) {
+                try {
+                    const isLoginAction = action === 'login';
+                    const response = await fetch('https://espostory.my.id/api_cpm.php', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': isLoginAction ? 'application/x-www-form-urlencoded' : 'application/json'
+                        },
+                        body: isLoginAction 
+                            ? new URLSearchParams({ action, ...data })
+                            : JSON.stringify({ action, ...data })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (!result.success && result.debug) {
+                        showStatus(result.message, 'error', result.debug);
+                    } else {
+                        showStatus(result.message, result.success ? 'success' : 'error');
+                    }
+                    
+                    return result;
+                } catch (error) {
+                    showStatus(`Network error: ${error.message}`, 'error');
+                    return { success: false, message: `Network error: ${error.message}` };
+                }
+            }
+
+            async function callKingApi(data) {
+                try {
+                    const response = await fetch('https://espostory.my.id/rank_king.php', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    // Cek jika respons adalah HTML (bukan JSON)
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        const text = await response.text();
+                        console.error('Server returned non-JSON response:', text);
+                        
+                        // Coba ekstrak pesan error dari HTML
+                        let errorMessage = 'Server error: Unexpected response format';
+                        if (text.includes('<title>')) {
+                            const titleMatch = text.match(/<title>(.*?)<\/title>/);
+                            if (titleMatch && titleMatch[1]) {
+                                errorMessage = `Server error: ${titleMatch[1]}`;
+                            }
+                        }
+                        
+                        showStatus(errorMessage, 'error');
+                        return { ok: false, error: errorMessage, html: text };
+                    }
+                    
+                    const result = await response.json();
+                    
+                    if (!result.ok && result.error) {
+                        showStatus(result.error, 'error');
+                    } else {
+                        showStatus(result.message || 'King berhasil di-inject!', result.ok ? 'success' : 'error');
+                    }
+                    
+                    return result;
+                } catch (error) {
+                    console.error('Network error:', error);
+                    showStatus(`Network error: ${error.message}`, 'error');
+                    return { ok: false, error: `Network error: ${error.message}` };
+                }
+            }
+
+            // Event Listeners
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                setButtonLoading(loginButton, true);
+                showLoadingOverlay('Sedang login...');
+                updateLoadingProgress(30);
+                
+                const result = await callApi('login', { email, password });
+                updateLoadingProgress(100);
+                
+                setTimeout(() => {
+                    hideLoadingOverlay();
+                    setButtonLoading(loginButton, false);
+                    
+                    if (result.success) {
+                        idToken = result.idToken;
+                        updateUserInfo(email);
+                        showStatus('✅ Login Berhasil! Selamat datang di SAI7 STORE.', 'success');
+                        showNotification('Login Berhasil', 'Selamat datang di SAI7 STORE', 'success');
+                        loginForm.classList.add('hidden');
+                        actionArea.classList.remove('hidden');
+                        statsArea.classList.remove('hidden');
+                        kingContainer.classList.remove('hidden');
+                        updateProgress(0);
+                    } else {
+                        showNotification('Login Gagal', result.message || 'Terjadi kesalahan saat login', 'error');
+                    }
+                }, 500);
+            });
+
+            logoutBtn.addEventListener('click', logout);
+
+            fetchCarsButton.addEventListener('click', async () => {
+                if (!idToken) {
+                    showStatus('Error: Token tidak ditemukan. Silakan login ulang.', 'error');
+                    return;
+                }
+                
+                setButtonLoading(fetchCarsButton, true);
+                showLoadingOverlay('Mengambil data mobil...');
+                updateLoadingProgress(30);
+                
+                const result = await callApi('getCars', { idToken });
+                updateLoadingProgress(100);
+                
+                setTimeout(() => {
+                    hideLoadingOverlay();
+                    setButtonLoading(fetchCarsButton, false);
+                    
+                    if (result.success) {
+                        allCarsData = result.cars;
+                        renderCarList(allCarsData);
+                        carListContainer.classList.remove('hidden');
+                        showStatus(`Berhasil mengambil ${allCarsData.length} mobil. Silakan pilih mobil untuk di-inject.`, 'success');
+                        showNotification('Data Berhasil Diambil', `Berhasil mengambil ${allCarsData.length} mobil`, 'success');
+                        updateStats();
+                    } else {
+                        showNotification('Gagal Mengambil Data', result.message || 'Terjadi kesalahan saat mengambil data', 'error');
+                    }
+                    
+                    updateProgress(0);
+                }, 500);
+            });
+
+            injectAllButton.addEventListener('click', async () => {
+                if (!idToken) {
+                    showStatus('Error: Token tidak ditemukan. Silakan login ulang.', 'error');
+                    return;
+                }
+                
+                setButtonLoading(injectAllButton, true);
+                showLoadingOverlay('Meng-inject semua livery...');
+                updateLoadingProgress(30);
+                
+                const result = await callApi('injectAll', { idToken });
+                updateLoadingProgress(100);
+                
+                setTimeout(() => {
+                    hideLoadingOverlay();
+                    setButtonLoading(injectAllButton, false);
+                    
+                    if (result.success) {
+                        injectedCount += parseInt(result.message.match(/\d+/)[0]);
+                        updateStats();
+                        showNotification('Inject Berhasil', 'Semua livery berhasil di-inject', 'success');
+                    } else {
+                        showNotification('Inject Gagal', result.message || 'Terjadi kesalahan saat inject', 'error');
+                    }
+                    
+                    updateProgress(0);
+                }, 500);
+            });
+
+            injectSelectedButton.addEventListener('click', async () => {
+                const selectedCarIds = getSelectedCarIds();
+                if (selectedCarIds.length === 0) {
+                    showStatus('Tidak ada mobil yang dipilih.', 'error');
+                    return;
+                }
+                
+                setButtonLoading(injectSelectedButton, true);
+                showLoadingOverlay(`Meng-inject ${selectedCarIds.length} livery terpilih...`);
+                updateLoadingProgress(30);
+                
+                const result = await callApi('injectSelected', { idToken, selectedCarIds });
+                updateLoadingProgress(100);
+                
+                setTimeout(() => {
+                    hideLoadingOverlay();
+                    setButtonLoading(injectSelectedButton, false);
+                    
+                    if (result.success) {
+                        injectedCount += parseInt(result.message.match(/\d+/)[0]);
+                        updateStats();
+                        showNotification('Inject Berhasil', `${selectedCarIds.length} livery terpilih berhasil di-inject`, 'success');
+                    } else {
+                        showNotification('Inject Gagal', result.message || 'Terjadi kesalahan saat inject', 'error');
+                    }
+                    
+                    updateProgress(0);
+                }, 500);
+            });
+
+            // Inject King (Auto) - Menggunakan email yang sudah login
+            injectKingButton.addEventListener('click', async () => {
+                if (!currentUserEmail) {
+                    showStatus('Error: Tidak ada pengguna yang login. Silakan login ulang.', 'error');
+                    return;
+                }
+                
+                setButtonLoading(injectKingButton, true);
+                showLoadingOverlay('Meng-inject King (Auto)...');
+                updateLoadingProgress(30);
+                
+                // Kirim email yang sudah login, tanpa password
+                const result = await callApi('injectKing', { 
+                    email: currentUserEmail,
+                    useExistingToken: true
+                });
+                updateLoadingProgress(100);
+                
+                setTimeout(() => {
+                    hideLoadingOverlay();
+                    setButtonLoading(injectKingButton, false);
+                    
+                    if (result.success) {
+                        showNotification('Inject King Berhasil', 'King berhasil di-inject', 'success');
+                    } else {
+                        showNotification('Inject King Gagal', result.message || 'Terjadi kesalahan saat inject King', 'error');
+                    }
+                    
+                    updateKingProgress(0);
+                }, 500);
+            });
+            
+            selectAllButton.addEventListener('click', () => {
+                const checkboxes = carList.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = true);
+                updateSelectedCarList();
+                updateStats();
+            });
+
+            deselectAllButton.addEventListener('click', () => {
+                const checkboxes = carList.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = false);
+                updateSelectedCarList();
+                updateStats();
+            });
+
+            function renderCarList(cars) {
+                carList.innerHTML = '';
+                cars.forEach(car => {
+                    const carItem = document.createElement('div');
+                    carItem.className = 'car-item';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `car-${car.CarID}`;
+                    checkbox.value = car.CarID;
+                    checkbox.addEventListener('change', updateSelectedCarList);
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = `car-${car.CarID}`;
+                    label.textContent = `${car.CarID} - ${car.CarName || 'Tanpa Nama'}`;
+                    
+                    carItem.appendChild(checkbox);
+                    carItem.appendChild(label);
+                    carList.appendChild(carItem);
+                });
+            }
+
+            function updateSelectedCarList() {
+                const selectedCarIds = getSelectedCarIds();
+                selectedCarList.innerHTML = '';
+                
+                if (selectedCarIds.length === 0) {
+                    selectedCarList.innerHTML = '<div class="car-item">Tidak ada mobil yang dipilih</div>';
+                    return;
+                }
+                
+                selectedCarIds.forEach(carId => {
+                    const car = allCarsData.find(c => c.CarID === carId);
+                    if (!car) return;
+                    
+                    const carItem = document.createElement('div');
+                    carItem.className = 'car-item';
+                    carItem.innerHTML = `
+                        <i class="fas fa-check-circle" style="color: var(--success-color); margin-right: 10px;"></i>
+                        <span>${car.CarID} - ${car.CarName || 'Tanpa Nama'}</span>
+                    `;
+                    selectedCarList.appendChild(carItem);
+                });
+                
+                updateStats();
+            }
+
+            function getSelectedCarIds() {
+                const checkboxes = carList.querySelectorAll('input[type="checkbox"]:checked');
+                return Array.from(checkboxes).map(cb => cb.value);
+            }
+
+            function updateKingProgress(percentage) {
+                kingProgressBar.style.width = `${percentage}%`;
+            }
+        });
+    </script>
+</body>
+</html>
