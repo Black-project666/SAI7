@@ -856,6 +856,91 @@
             font-size: 1.2rem;
         }
 
+        /* Checkbox styling */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .checkbox-container label {
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+
+        /* File list styling */
+        .file-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            margin-top: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-item:hover {
+            background-color: rgba(123, 60, 152, 0.1);
+        }
+
+        .file-item i {
+            margin-right: 0.5rem;
+            color: var(--malaysia-yellow);
+        }
+
+        /* API Status Badge */
+        .api-status {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: var(--border-radius);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 999;
+            transition: var(--transition);
+        }
+
+        .api-status.online {
+            border-color: rgba(40, 167, 69, 0.3);
+            background-color: rgba(40, 167, 69, 0.2);
+        }
+
+        .api-status.offline {
+            border-color: rgba(220, 53, 69, 0.3);
+            background-color: rgba(220, 53, 69, 0.2);
+        }
+
+        .api-status i {
+            font-size: 0.8rem;
+        }
+
         @media (max-width: 768px) {
             main {
                 flex-direction: column;
@@ -884,6 +969,11 @@
                 top: 80px;
                 right: 10px;
                 padding: 10px 15px;
+            }
+            
+            .api-status {
+                top: 130px;
+                right: 10px;
             }
             
             .notification {
@@ -944,6 +1034,12 @@
         </div>
     </header>
 
+    <!-- API Status Badge -->
+    <div class="api-status" id="apiStatus">
+        <i class="fas fa-circle"></i>
+        <span>API: https://espo.my.id</span>
+    </div>
+
     <main>
         <div class="left-panel container">
             <h1><i class="fas fa-sign-in-alt"></i> Login</h1>
@@ -962,6 +1058,10 @@
                     <label for="password"><i class="fas fa-lock"></i> Password:</label>
                     <input type="password" id="password" name="password" required placeholder="••••••••">
                 </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="saveCarsCheckbox" name="saveCars" checked>
+                    <label for="saveCarsCheckbox">Simpan data mobil ke folder cpm/cars/livery setelah login</label>
+                </div>
                 <button type="submit" id="loginButton">
                     <span class="button-text"><i class="fas fa-sign-in-alt"></i> Login</span>
                     <div class="loading-spinner"></div>
@@ -975,6 +1075,10 @@
                         <span class="button-text"><i class="fas fa-download"></i> Ambil Data</span>
                         <div class="loading-spinner"></div>
                     </button>
+                    <button id="saveCarsButton" class="warning">
+                        <span class="button-text"><i class="fas fa-save"></i> Simpan Data</span>
+                        <div class="loading-spinner"></div>
+                    </button>
                     <button id="injectAllButton" class="secondary">
                         <span class="button-text"><i class="fas fa-upload"></i> Inject Semua</span>
                         <div class="loading-spinner"></div>
@@ -982,6 +1086,11 @@
                 </div>
                 <div class="progress-bar">
                     <div class="progress" id="progressBar"></div>
+                </div>
+                
+                <div id="savedFilesContainer" class="hidden">
+                    <h3><i class="fas fa-file"></i> File yang Disimpan</h3>
+                    <div class="file-list" id="savedFilesList"></div>
                 </div>
             </div>
 
@@ -997,6 +1106,10 @@
                 <div class="stat-card">
                     <div class="stat-value" id="injectedCars">0</div>
                     <div class="stat-label">Di-inject</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="savedCars">0</div>
+                    <div class="stat-label">Disimpan</div>
                 </div>
             </div>
         </div>
@@ -1080,15 +1193,20 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Konfigurasi API URL
+            const API_BASE_URL = 'https://espo.my.id';
+            
             const statusBox = document.getElementById('statusBox');
             const loginForm = document.getElementById('loginForm');
             const loginButton = document.getElementById('loginButton');
+            const saveCarsCheckbox = document.getElementById('saveCarsCheckbox');
             const actionArea = document.getElementById('actionArea');
             const carListContainer = document.getElementById('carListContainer');
             const kingContainer = document.getElementById('kingContainer');
             const carList = document.getElementById('carList');
             const selectedCarList = document.getElementById('selectedCarList');
             const fetchCarsButton = document.getElementById('fetchCarsButton');
+            const saveCarsButton = document.getElementById('saveCarsButton');
             const injectAllButton = document.getElementById('injectAllButton');
             const injectSelectedButton = document.getElementById('injectSelectedButton');
             const selectAllButton = document.getElementById('selectAllButton');
@@ -1100,6 +1218,7 @@
             const totalCarsElement = document.getElementById('totalCars');
             const selectedCarsElement = document.getElementById('selectedCars');
             const injectedCarsElement = document.getElementById('injectedCars');
+            const savedCarsElement = document.getElementById('savedCars');
             const debugContainer = document.getElementById('debugContainer');
             const debugInfo = document.getElementById('debugInfo');
             const connectionStatus = document.getElementById('connectionStatus');
@@ -1108,6 +1227,9 @@
             const userEmail = document.getElementById('userEmail');
             const userAvatar = document.getElementById('userAvatar');
             const logoutBtn = document.getElementById('logoutBtn');
+            const savedFilesContainer = document.getElementById('savedFilesContainer');
+            const savedFilesList = document.getElementById('savedFilesList');
+            const apiStatus = document.getElementById('apiStatus');
             
             // Loading overlay elements
             const loadingOverlay = document.getElementById('loadingOverlay');
@@ -1118,8 +1240,10 @@
             let idToken = '';
             let allCarsData = [];
             let injectedCount = 0;
+            let savedCount = 0;
             let currentUserEmail = '';
             let notificationTimeout;
+            let savedFiles = [];
 
             // Tab functionality
             const tabs = document.querySelectorAll('.tab');
@@ -1222,6 +1346,7 @@
                 totalCarsElement.textContent = allCarsData.length;
                 selectedCarsElement.textContent = getSelectedCarIds().length;
                 injectedCarsElement.textContent = injectedCount;
+                savedCarsElement.textContent = savedCount;
             }
 
             // Show status
@@ -1269,6 +1394,59 @@
                 }
             }
 
+            // Update saved files list
+            function updateSavedFilesList(files) {
+                savedFilesList.innerHTML = '';
+                
+                if (files.length === 0) {
+                    savedFilesList.innerHTML = '<div class="file-item">Tidak ada file yang disimpan</div>';
+                    return;
+                }
+                
+                files.forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    
+                    // Extract filename from full path
+                    const filename = file.split('/').pop();
+                    
+                    fileItem.innerHTML = `
+                        <i class="fas fa-file"></i>
+                        <span>${filename}</span>
+                    `;
+                    savedFilesList.appendChild(fileItem);
+                });
+            }
+
+            // Check API status
+            function checkApiStatus() {
+                fetch(`${API_BASE_URL}/api_cpm.php`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'ping' })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        apiStatus.classList.remove('offline');
+                        apiStatus.classList.add('online');
+                        apiStatus.innerHTML = `
+                            <i class="fas fa-circle"></i>
+                            <span>API: https://espo.my.id (Online)</span>
+                        `;
+                    } else {
+                        throw new Error('API not responding');
+                    }
+                })
+                .catch(error => {
+                    apiStatus.classList.remove('online');
+                    apiStatus.classList.add('offline');
+                    apiStatus.innerHTML = `
+                        <i class="fas fa-circle"></i>
+                        <span>API: https://espo.my.id (Offline)</span>
+                    `;
+                });
+            }
+
             // Check connection status
             function checkConnectionStatus() {
                 fetch('https://www.googleapis.com', { mode: 'no-cors' })
@@ -1290,7 +1468,9 @@
 
             // Check connection every 5 seconds
             setInterval(checkConnectionStatus, 5000);
+            setInterval(checkApiStatus, 10000); // Check API status every 10 seconds
             checkConnectionStatus();
+            checkApiStatus();
 
             // Update user info
             function updateUserInfo(email) {
@@ -1306,6 +1486,8 @@
                 currentUserEmail = '';
                 allCarsData = [];
                 injectedCount = 0;
+                savedCount = 0;
+                savedFiles = [];
                 
                 // Reset UI
                 loginForm.classList.remove('hidden');
@@ -1313,11 +1495,13 @@
                 carListContainer.classList.add('hidden');
                 kingContainer.classList.add('hidden');
                 statsArea.classList.add('hidden');
+                savedFilesContainer.classList.add('hidden');
                 userInfo.classList.add('hidden');
                 
                 // Reset form
                 document.getElementById('email').value = '';
                 document.getElementById('password').value = '';
+                saveCarsCheckbox.checked = true;
                 
                 showStatus('Anda telah keluar. Silakan login kembali.', 'info');
                 showNotification('Info', 'Anda telah keluar. Silakan login kembali.', 'info');
@@ -1326,7 +1510,7 @@
             async function callApi(action, data = {}) {
                 try {
                     const isLoginAction = action === 'login';
-                    const response = await fetch('api_cpm.php', {
+                    const response = await fetch(`${API_BASE_URL}/api_cpm.php`, {
                         method: 'POST',
                         headers: { 
                             'Content-Type': isLoginAction ? 'application/x-www-form-urlencoded' : 'application/json'
@@ -1353,7 +1537,7 @@
 
             async function callKingApi(data) {
                 try {
-                    const response = await fetch('rank_king.php', {
+                    const response = await fetch(`${API_BASE_URL}/rank_king.php`, {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json'
@@ -1401,12 +1585,13 @@
                 e.preventDefault();
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
+                const saveCars = saveCarsCheckbox.checked;
                 
                 setButtonLoading(loginButton, true);
                 showLoadingOverlay('Sedang login...');
                 updateLoadingProgress(30);
                 
-                const result = await callApi('login', { email, password });
+                const result = await callApi('login', { email, password, saveCars });
                 updateLoadingProgress(100);
                 
                 setTimeout(() => {
@@ -1416,13 +1601,28 @@
                     if (result.success) {
                         idToken = result.idToken;
                         updateUserInfo(email);
-                        showStatus('✅ Login Berhasil! Selamat datang di SAI7 STORE.', 'success');
-                        showNotification('Login Berhasil', 'Selamat datang di SAI7 STORE', 'success');
+                        
+                        // Check if cars were saved during login
+                        if (result.carsSaved) {
+                            savedCount += result.savedCount || 0;
+                            if (result.savedFiles && result.savedFiles.length > 0) {
+                                savedFiles = result.savedFiles;
+                                updateSavedFilesList(savedFiles);
+                                savedFilesContainer.classList.remove('hidden');
+                            }
+                            showStatus('✅ Login Berhasil! Data mobil telah disimpan.', 'success');
+                            showNotification('Login Berhasil', 'Data mobil telah disimpan ke folder cpm/cars/livery', 'success');
+                        } else {
+                            showStatus('✅ Login Berhasil! Selamat datang di SAI7 STORE.', 'success');
+                            showNotification('Login Berhasil', 'Selamat datang di SAI7 STORE', 'success');
+                        }
+                        
                         loginForm.classList.add('hidden');
                         actionArea.classList.remove('hidden');
                         statsArea.classList.remove('hidden');
                         kingContainer.classList.remove('hidden');
                         updateProgress(0);
+                        updateStats();
                     } else {
                         showNotification('Login Gagal', result.message || 'Terjadi kesalahan saat login', 'error');
                     }
@@ -1457,6 +1657,42 @@
                         updateStats();
                     } else {
                         showNotification('Gagal Mengambil Data', result.message || 'Terjadi kesalahan saat mengambil data', 'error');
+                    }
+                    
+                    updateProgress(0);
+                }, 500);
+            });
+
+            // New Save Cars Button
+            saveCarsButton.addEventListener('click', async () => {
+                if (!idToken) {
+                    showStatus('Error: Token tidak ditemukan. Silakan login ulang.', 'error');
+                    return;
+                }
+                
+                setButtonLoading(saveCarsButton, true);
+                showLoadingOverlay('Menyimpan data mobil...');
+                updateLoadingProgress(30);
+                
+                const result = await callApi('saveCars', { idToken, email: currentUserEmail });
+                updateLoadingProgress(100);
+                
+                setTimeout(() => {
+                    hideLoadingOverlay();
+                    setButtonLoading(saveCarsButton, false);
+                    
+                    if (result.success) {
+                        savedCount += result.saved_count || 0;
+                        if (result.saved_files && result.saved_files.length > 0) {
+                            savedFiles = result.saved_files;
+                            updateSavedFilesList(savedFiles);
+                            savedFilesContainer.classList.remove('hidden');
+                        }
+                        showStatus(`Data mobil berhasil disimpan. Path: ${result.path}`, 'success');
+                        showNotification('Data Berhasil Disimpan', `${result.saved_count || 0} mobil berhasil disimpan ke folder cpm/cars/livery`, 'success');
+                        updateStats();
+                    } else {
+                        showNotification('Gagal Menyimpan Data', result.message || 'Terjadi kesalahan saat menyimpan data', 'error');
                     }
                     
                     updateProgress(0);
