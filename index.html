@@ -3,1862 +3,824 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI7 STORE - Game API Tools</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>SAI7 STORE - CPM Tools</title>
     <style>
+        /* --- SEMUA STYLE TETAP SAMA --- */
         :root {
-            --primary-color: #4a6cf7;
-            --secondary-color: #6c757d;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --info-color: #17a2b8;
-            --dark-color: #343a40;
-            --light-color: #f8f9fa;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-            --malaysia-blue: #0033A0;
-            --malaysia-red: #CC0001;
-            --malaysia-yellow: #FFCC00;
-            --purple-color: #9b59b6;
-            --purple-light: #a569bd;
-            --purple-dark: #7d3c98;
+            --primary-color: #e53935;
+            --primary-dark: #c62828;
+            --secondary-color: #212121;
+            --background-color: #1a1a1a;
+            --surface-color: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: #3a3a3a;
+            --shadow-light: rgba(0, 0, 0, 0.2);
+            --shadow-heavy: rgba(0, 0, 0, 0.5);
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, var(--purple-light), var(--purple-dark));
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
             position: relative;
-            overflow-x: hidden;
+            min-height: 100vh;
         }
-
-        /* Malaysia Flag Pattern Overlay */
+        
         body::before {
-            content: "";
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent),
-                linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent);
-            background-size: 50px 50px;
+            background: radial-gradient(circle at 50% 50%, rgba(229, 57, 53, 0.1) 0%, transparent 70%);
             z-index: -1;
         }
 
-        /* Malaysia Flag Corner */
-        .flag-corner {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 200px;
-            height: 200px;
-            background: var(--purple-dark);
-            clip-path: polygon(100% 0, 0 0, 100% 100%);
-            z-index: -1;
-            opacity: 0.7;
+        /* --- Layout --- */
+        .main-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .content-area {
+            flex: 1;
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
         }
 
-        .flag-corner::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 200px;
-            height: 200px;
-            background: 
-                radial-gradient(circle at 50% 50%, var(--malaysia-yellow) 20%, transparent 20%),
-                linear-gradient(45deg, transparent 49.5%, var(--malaysia-yellow) 49.5%, var(--malaysia-yellow) 50.5%, transparent 50.5%),
-                linear-gradient(-45deg, transparent 49.5%, var(--malaysia-yellow) 49.5%, var(--malaysia-yellow) 50.5%, transparent 50.5%);
-            opacity: 0.8;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        header {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 1rem 2rem;
-            box-shadow: var(--box-shadow);
+        /* --- Sticky Header & Navigation --- */
+        .main-header {
             position: sticky;
             top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 100;
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px var(--shadow-light);
         }
-
-        .header-container {
-            max-width: 1200px;
+        header {
+            text-align: center;
+            padding: 15px 20px;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -1px;
+            margin-bottom: 5px;
+        }
+        header .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        nav {
+            background-color: transparent;
+        }
+        .nav-container {
+            max-width: 900px;
             margin: 0 auto;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: white;
-        }
-
-        .logo i {
-            font-size: 2rem;
-            background: linear-gradient(45deg, white, var(--malaysia-yellow));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 5px 15px;
-            border-radius: 20px;
-            background-color: rgba(255, 255, 255, 0.15);
-            color: white;
-            font-size: 0.9rem;
-        }
-
-        .user-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--purple-light), var(--purple-dark));
-            display: flex;
-            align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
         }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
-            border-radius: 20px;
-            background-color: rgba(40, 167, 69, 0.2);
-            color: white;
-            font-size: 0.9rem;
-        }
-
-        .status-indicator.offline {
-            background-color: rgba(220, 53, 69, 0.2);
-            color: white;
-        }
-
-        .status-indicator i {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        main {
-            flex: 1;
-            display: flex;
-            padding: 2rem;
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 2rem;
-            width: 100%;
-            transition: var(--transition);
+        .nav-item {
+            padding: 15px 30px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
             position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: color 0.3s ease;
         }
-
-        .container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--purple-light), var(--purple-dark));
+        .nav-item:hover {
+            color: var(--text-primary);
         }
-
-        .container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        .nav-item.active {
+            color: var(--primary-color);
         }
-
-        .left-panel {
-            flex: 1;
-            max-width: 400px;
-        }
-
-        .right-panel {
-            flex: 1.5;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        h1, h2 {
-            color: white;
-            margin-bottom: 1.5rem;
-            position: relative;
-            padding-bottom: 0.5rem;
-        }
-
-        h1::after, h2::after {
+        .nav-item.active::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 50px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--malaysia-yellow), white);
-            border-radius: 3px;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: white;
-        }
-
-        input[type="text"], input[type="password"], input[type="number"], select {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: var(--border-radius);
+            height: 3px;
+            background-color: var(--primary-color);
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        /* --- Content Sections --- */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Card Component --- */
+        .card {
+            background-color: var(--surface-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px var(--shadow-heavy);
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        /* --- Form Elements --- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
             font-size: 1rem;
-            transition: var(--transition);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
-        input[type="text"]::placeholder, input[type="password"]::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, select:focus {
-            border-color: var(--malaysia-yellow);
+        .form-control:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.2);
-            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.2);
         }
-
-        button {
-            padding: 0.75rem 1.5rem;
+        .form-control::placeholder {
+            color: #666;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: var(--primary-color);
+            color: var(--text-primary);
             border: none;
-            border-radius: var(--border-radius);
-            background: linear-gradient(45deg, var(--purple-light), var(--purple-dark));
-            color: white;
+            border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            position: relative;
-            overflow: hidden;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
         }
-
-        button:hover {
+        .btn:hover {
+            background-color: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(123, 60, 152, 0.3);
+            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.4);
         }
-
-        button:disabled {
-            background: var(--secondary-color);
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn:disabled {
+            background-color: #555;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
-
-        button.secondary {
-            background: linear-gradient(45deg, var(--secondary-color), #5a6268);
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        .btn-secondary:hover {
+            background-color: var(--primary-color);
+            color: var(--text-primary);
         }
 
-        button.success {
-            background: linear-gradient(45deg, var(--success-color), #218838);
+        /* --- Home Section Styling --- */
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
-
-        button.danger {
-            background: linear-gradient(45deg, var(--danger-color), #c82333);
-        }
-
-        button.warning {
-            background: linear-gradient(45deg, var(--warning-color), #e0a800);
-        }
-
-        /* Loading Spinner */
-        .loading-spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        button.loading .loading-spinner {
-            display: inline-block;
-        }
-
-        button.loading .button-text {
-            display: none;
-        }
-
-        .status {
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            margin-top: 1.5rem;
+        .guide-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
             text-align: center;
-            font-weight: 500;
-            white-space: pre-line;
+            transition: transform 0.3s ease;
+        }
+        .guide-card:hover {
+            transform: scale(1.05);
+        }
+        .guide-card .step-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        .guide-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        .guide-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* --- Car List Styling --- */
+        #car-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: var(--background-color);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        #car-list li {
+            list-style: none;
+            background-color: var(--surface-color);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        #car-list li:hover {
+            background-color: var(--primary-color);
+            color: var(--text-primary);
+        }
+        #car-list li.selected {
+            background-color: var(--primary-color);
+            color: var(--text-primary);
+            border-color: var(--primary-dark);
+        }
+        
+        /* --- Car Selection Controls --- */
+        .car-selection-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        .car-selection-controls button {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            width: auto;
+        }
+        .selection-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            align-self: center;
+        }
+
+        /* --- Progress Bar --- */
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: var(--background-color);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background-color: var(--surface-color);
+            border-top: 1px solid var(--border-color);
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: auto;
+        }
+        .footer-content h3 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .footer-link {
+            display: block;
+            width: 50px;
+            height: 50px;
+            background-color: var(--background-color);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .footer-link:hover {
+            transform: scale(1.1);
+            background-color: var(--primary-color);
+        }
+        .footer-link svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-secondary);
+            transition: fill 0.3s ease;
+        }
+        .footer-link:hover svg {
+            fill: var(--text-primary);
         }
 
-        .status.success {
-            background-color: rgba(40, 167, 69, 0.2);
-            color: white;
-            border: 1px solid rgba(40, 167, 69, 0.3);
-        }
-
-        .status.error {
-            background-color: rgba(220, 53, 69, 0.2);
-            color: white;
-            border: 1px solid rgba(220, 53, 69, 0.3);
-        }
-
-        .status.info {
-            background-color: rgba(23, 162, 184, 0.2);
-            color: white;
-            border: 1px solid rgba(23, 162, 184, 0.3);
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .tabs {
-            display: flex;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .tab {
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: var(--transition);
-            font-weight: 500;
-            color: white;
-        }
-
-        .tab:hover {
-            background-color: rgba(123, 60, 152, 0.2);
-        }
-
-        .tab.active {
-            color: var(--malaysia-yellow);
-            border-bottom-color: var(--malaysia-yellow);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .car-list {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: var(--border-radius);
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .car-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
-            color: white;
-        }
-
-        .car-item:last-child {
-            border-bottom: none;
-        }
-
-        .car-item:hover {
-            background-color: rgba(123, 60, 152, 0.1);
-        }
-
-        .car-item input {
-            margin-right: 0.75rem;
-        }
-
-        .car-item label {
-            flex-grow: 1;
-            cursor: pointer;
-            margin-bottom: 0;
-            font-weight: normal;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .action-buttons button {
-            flex: 1;
-        }
-
-        .progress-bar {
-            height: 5px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-            margin-top: 1rem;
-            overflow: hidden;
-        }
-
-        .progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--purple-light), var(--purple-dark));
-            width: 0;
-            transition: width 0.3s ease;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--malaysia-yellow);
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: white;
-            margin-top: 0.25rem;
-        }
-
-        .debug-info {
-            margin-top: 1rem;
-            padding: 1rem;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: var(--border-radius);
-            font-family: monospace;
-            font-size: 0.8rem;
-            color: white;
-            white-space: pre-wrap;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        footer {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 1rem;
-            text-align: center;
-            color: white;
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        /* WhatsApp/Telegram Style Notification */
-        .notification-container {
+        /* --- Loading & Notification --- */
+        #loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
             justify-content: center;
             align-items: center;
+            z-index: 1000;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* --- PERUBAAN NOTIFIKASI: BLUR HANYA PADA KOTAK --- */
+        #notification-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             pointer-events: none;
-            z-index: 9999;
         }
 
         .notification {
-            background: rgba(30, 30, 30, 0.95);
+            background-color: rgba(42, 42, 42, 0.8);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            padding: 20px 30px;
             border-radius: 12px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            box-shadow: 0 8px 25px var(--shadow-heavy);
+            margin-bottom: 10px;
             min-width: 300px;
-            max-width: 90%;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transform: translateY(20px) scale(0.9);
+            max-width: 500px;
+            text-align: center;
+            border-left: 5px solid var(--primary-color);
             opacity: 0;
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
             pointer-events: auto;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
         }
-
         .notification.show {
-            transform: translateY(0) scale(1);
             opacity: 1;
+            transform: translateY(0);
         }
-
-        .notification-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+        .notification.success {
+            border-left-color: #4caf50;
         }
-
-        .notification.success .notification-icon {
-            background: rgba(40, 167, 69, 0.2);
-            color: #4CAF50;
+        .notification.error {
+            border-left-color: #f44336;
         }
-
-        .notification.error .notification-icon {
-            background: rgba(220, 53, 69, 0.2);
-            color: #F44336;
+        .notification.info {
+            border-left-color: #2196f3;
         }
-
-        .notification.info .notification-icon {
-            background: rgba(23, 162, 184, 0.2);
-            color: #2196F3;
-        }
-
-        .notification-icon i {
-            font-size: 20px;
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-weight: 600;
-            color: white;
-            margin-bottom: 4px;
-            font-size: 16px;
-        }
-
-        .notification-message {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .notification-close {
+        .notification .close-btn {
+            position: absolute;
+            top: 8px;
+            right: 10px;
             background: none;
             border: none;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-secondary);
+            font-size: 22px;
             cursor: pointer;
             padding: 0;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: var(--transition);
-            flex-shrink: 0;
+            line-height: 1;
+        }
+        .notification .close-btn:hover {
+            color: var(--text-primary);
         }
 
-        .notification-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-
-        .notification-progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--purple-light), var(--purple-dark));
-            border-radius: 0 0 0 12px;
-            width: 100%;
-            transform-origin: left;
-            animation: notificationProgress 3s linear forwards;
-        }
-
-        @keyframes notificationProgress {
-            from { transform: scaleX(1); }
-            to { transform: scaleX(0); }
-        }
-
-        .king-features {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .king-feature {
-            background: rgba(123, 60, 152, 0.2);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            text-align: center;
-            transition: var(--transition);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .king-feature:hover {
-            background: rgba(123, 60, 152, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .king-feature i {
-            font-size: 2rem;
-            color: var(--malaysia-yellow);
-            margin-bottom: 0.5rem;
-        }
-
-        .king-feature h3 {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-            color: white;
-        }
-
-        .king-feature p {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .logout-btn {
-            background: linear-gradient(45deg, var(--danger-color), #c82333);
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .loading-overlay.active {
-            display: flex;
-        }
-
-        .loading-content {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            max-width: 400px;
-            width: 90%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .loading-spinner-large {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            border-top-color: var(--malaysia-yellow);
-            animation: spin 1s ease-in-out infinite;
-            margin: 0 auto 1rem;
-        }
-
-        .loading-text {
-            font-size: 1.2rem;
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        .loading-progress {
-            height: 8px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 0.5rem;
-        }
-
-        .loading-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--purple-light), var(--purple-dark));
-            width: 0;
-            transition: width 0.3s ease;
-        }
-
-        .loading-percentage {
-            font-size: 0.9rem;
-            color: white;
-        }
-
-        /* Admin Info */
-        .admin-info {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            z-index: 999;
-            transition: var(--transition);
-        }
-
-        .admin-info:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .admin-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--purple-light), var(--purple-dark));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-
-        .admin-details h3 {
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-            color: var(--malaysia-yellow);
-        }
-
-        .admin-details p {
-            font-size: 0.8rem;
-            margin: 0;
-        }
-
-        .admin-details a {
-            color: white;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .admin-details a:hover {
-            color: var(--malaysia-yellow);
-        }
-
-        /* Donation Button */
-        .donation-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, var(--malaysia-yellow), #FFD700);
-            color: var(--purple-dark);
-            border-radius: 50px;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.4);
-            z-index: 999;
-            transition: var(--transition);
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        .donation-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(255, 204, 0, 0.6);
-        }
-
-        .donation-btn i {
-            font-size: 1.2rem;
-        }
-
-        /* Checkbox styling */
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .checkbox-container input[type="checkbox"] {
-            width: auto;
-            margin-right: 0.5rem;
-        }
-
-        .checkbox-container label {
-            margin-bottom: 0;
-            font-weight: normal;
-        }
-
-        /* File list styling */
-        .file-list {
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: var(--border-radius);
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            margin-top: 1rem;
-        }
-
-        .file-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
-            color: white;
-            font-size: 0.9rem;
-        }
-
-        .file-item:last-child {
-            border-bottom: none;
-        }
-
-        .file-item:hover {
-            background-color: rgba(123, 60, 152, 0.1);
-        }
-
-        .file-item i {
-            margin-right: 0.5rem;
-            color: var(--malaysia-yellow);
-        }
-
-        /* API Status Badge */
-        .api-status {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: var(--border-radius);
-            padding: 0.5rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: white;
-            font-size: 0.8rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            z-index: 999;
-            transition: var(--transition);
-        }
-
-        .api-status.online {
-            border-color: rgba(40, 167, 69, 0.3);
-            background-color: rgba(40, 167, 69, 0.2);
-        }
-
-        .api-status.offline {
-            border-color: rgba(220, 53, 69, 0.3);
-            background-color: rgba(220, 53, 69, 0.2);
-        }
-
-        .api-status i {
-            font-size: 0.8rem;
-        }
-
-        @media (max-width: 768px) {
-            main {
-                flex-direction: column;
-            }
-            
-            .left-panel, .right-panel {
-                max-width: 100%;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .king-features {
-                grid-template-columns: 1fr;
-            }
-            
-            .admin-info {
-                bottom: 10px;
-                left: 10px;
-                right: 10px;
-            }
-            
-            .donation-btn {
-                bottom: auto;
-                top: 80px;
-                right: 10px;
-                padding: 10px 15px;
-            }
-            
-            .api-status {
-                top: 130px;
-                right: 10px;
-            }
-            
-            .notification {
-                min-width: 280px;
-                padding: 14px 16px;
-            }
-            
-            .notification-icon {
-                width: 36px;
-                height: 36px;
-            }
-            
-            .notification-icon i {
-                font-size: 18px;
-            }
-            
-            .notification-title {
-                font-size: 15px;
-            }
-            
-            .notification-message {
-                font-size: 13px;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="flag-corner"></div>
-    
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-content">
-            <div class="loading-spinner-large"></div>
-            <div class="loading-text" id="loadingText">Memproses...</div>
-            <div class="loading-progress">
-                <div class="loading-progress-bar" id="loadingProgressBar"></div>
+
+    <div class="main-wrapper">
+        <!-- Sticky Header & Navigation -->
+        <div class="main-header">
+            <header>
+                <h1>SAI7 STORE</h1>
+                <p class="subtitle">Car Parking Multiplayer Tools</p>
+            </header>
+            <nav>
+                <div class="nav-container">
+                    <a href="#" class="nav-item active" onclick="showSection('home', this)">Home</a>
+                    <a href="#" class="nav-item" onclick="showSection('login', this)">Login</a>
+                    <a href="#" class="nav-item" onclick="showSection('cars', this)">Mobil</a>
+                    <a href="#" class="nav-item" onclick="showSection('king', this)">King</a>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+            <!-- Home Section -->
+            <section id="home" class="content-section active">
+                <div class="card">
+                    <h2 class="card-title">Cara Penggunaan Tools</h2>
+                    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">Ikuti langkah-langkah mudah di bawah ini untuk memulai.</p>
+                    <div class="guide-grid">
+                        <div class="guide-card">
+                            <div class="step-number">1</div>
+                            <h3>Login & Backup</h3>
+                            <p>Login akun sumber, lalu backup semua data mobil ke server.</p>
+                        </div>
+                        <div class="guide-card">
+                            <div class="step-number">2</div>
+                            <h3>Ganti Akun</h3>
+                            <p>Login ke akun tujuan yang akan menerima mobil.</p>
+                        </div>
+                        <div class="guide-card">
+                            <div class="step-number">3</div>
+                            <h3>Inject Mobil</h3>
+                            <p>Pergi ke tab "Mobil" dan inject semua data yang sudah di-backup.</p>
+                        </div>
+                        <div class="guide-card">
+                            <div class="step-number">4</div>
+                            <h3>Inject King</h3>
+                            <p>Gunakan tab "King" untuk menaikkan rating di akun.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Login Section -->
+            <section id="login" class="content-section">
+                <div class="card">
+                    <h2 class="card-title">Login Akun Game</h2>
+                    <form onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="login-email">Email Akun</label>
+                            <input type="email" id="login-email" class="form-control" placeholder="Masukkan email game" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" class="form-control" placeholder="Masukkan password" required>
+                        </div>
+                        <button type="button" class="btn" onclick="handleLogin()">Login Sesi</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2 class="card-title">Backup Data Mobil</h2>
+                    <p style="color: var(--text-secondary);">Klik tombol di bawah untuk menyimpan semua data mobil dari akun yang sedang login ke server.</p>
+                    <button id="backup-btn" class="btn btn-secondary" onclick="handleBackup()" disabled>Backup Data Mobil</button>
+                    <div class="progress-container" id="backup-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="backup-progress-fill"></div>
+                        </div>
+                        <div class="progress-text" id="backup-progress-text">Memproses...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cars Section -->
+            <section id="cars" class="content-section">
+                <div class="card">
+                    <h2 class="card-title">Info Data Mobil (Lokal)</h2>
+                    <p style="color: var(--text-secondary);">Daftar mobil yang tersimpan di folder server.</p>
+                    <button id="info-btn" class="btn" onclick="loadLiveryFiles()" disabled>Cek Folder</button>
+                    <ul id="car-list" style="display: none;"></ul>
+                    <div class="car-selection-controls" id="car-selection-controls" style="display: none;">
+                        <button type="button" class="btn btn-secondary" onclick="selectAllCars()">Pilih Semua</button>
+                        <span class="selection-info" id="selection-info">0 mobil dipilih</span>
+                        <button type="button" class="btn btn-secondary" onclick="clearSelection()">Hapus Pilihan</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2 class="card-title">Inject Car/Livery</h2>
+                    <p style="color: var(--text-secondary);">Inject mobil/livery yang dipilih ke akun yang sedang login.</p>
+                    <button id="inject-btn" class="btn" onclick="handleInjectLivery()" disabled>Inject Mobil/Livery Dipilih</button>
+                    <div class="progress-container" id="inject-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="inject-progress-fill"></div>
+                        </div>
+                        <div class="progress-text" id="inject-progress-text">Memproses...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- King Section -->
+            <section id="king" class="content-section">
+                <div class="card">
+                    <h2 class="card-title">Inject King (Rating)</h2>
+                    <form onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="king-email">Email Akun</label>
+                            <input type="email" id="king-email" class="form-control" placeholder="Masukkan email game" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="king-password">Password</label>
+                            <input type="password" id="king-password" class="form-control" placeholder="Masukkan password" required>
+                        </div>
+                        <button type="button" class="btn" onclick="handleInjectKing()">Inject King</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <h3>SAI7 STORE</h3>
+                <p style="color: var(--text-secondary);">Terima kasih telah menggunakan tools kami.</p>
+                <div class="footer-links">
+                    <a href="https://saweria.co/ESPOSTORE" target="_blank" class="footer-link" title="Donasi via Saweria">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/></svg>
+                    </a>
+                    <a href="https://t.me/ESPO_STORE" target="_blank" class="footer-link" title="Hubungi Admin di Telegram">
+                        <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.66 12c-.88-.25-.89-.86.2-1.3l15.97-5.85c.73-.27 1.37.17 1.13.94l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+                    </a>
+                </div>
             </div>
-            <div class="loading-percentage" id="loadingPercentage">0%</div>
         </div>
     </div>
 
-    <header>
-        <div class="header-container">
-            <div class="logo">
-                <i class="fas fa-store"></i>
-                <span>SAI7 STORE</span>
-            </div>
-            <div class="user-info hidden" id="userInfo">
-                <div class="user-avatar" id="userAvatar">U</div>
-                <span id="userEmail">user@example.com</span>
-                <button id="logoutBtn" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
-            </div>
-            <div class="status-indicator" id="connectionStatus">
-                <i class="fas fa-circle"></i>
-                <span>Online</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- API Status Badge -->
-    <div class="api-status" id="apiStatus">
-        <i class="fas fa-circle"></i>
-        <span>API: https://espo.my.id</span>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
     </div>
-
-    <main>
-        <div class="left-panel container">
-            <h1><i class="fas fa-sign-in-alt"></i> Login</h1>
-            
-            <div id="statusBox" class="status info">
-                <i class="fas fa-info-circle"></i>
-                <span>Masuk untuk melanjutkan.</span>
-            </div>
-
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="email"><i class="fas fa-envelope"></i> Email:</label>
-                    <input type="text" id="email" name="email" required placeholder="nama@email.com">
-                </div>
-                <div class="form-group">
-                    <label for="password"><i class="fas fa-lock"></i> Password:</label>
-                    <input type="password" id="password" name="password" required placeholder="••••••••">
-                </div>
-                <div class="checkbox-container">
-                    <input type="checkbox" id="saveCarsCheckbox" name="saveCars" checked>
-                    <label for="saveCarsCheckbox">Simpan data mobil ke folder cpm/cars/livery setelah login</label>
-                </div>
-                <button type="submit" id="loginButton">
-                    <span class="button-text"><i class="fas fa-sign-in-alt"></i> Login</span>
-                    <div class="loading-spinner"></div>
-                </button>
-            </form>
-
-            <div id="actionArea" class="hidden">
-                <h2><i class="fas fa-cogs"></i> Aksi</h2>
-                <div class="action-buttons">
-                    <button id="fetchCarsButton" class="success">
-                        <span class="button-text"><i class="fas fa-download"></i> Ambil Data</span>
-                        <div class="loading-spinner"></div>
-                    </button>
-                    <button id="saveCarsButton" class="warning">
-                        <span class="button-text"><i class="fas fa-save"></i> Simpan Data</span>
-                        <div class="loading-spinner"></div>
-                    </button>
-                    <button id="injectAllButton" class="secondary">
-                        <span class="button-text"><i class="fas fa-upload"></i> Inject Semua</span>
-                        <div class="loading-spinner"></div>
-                    </button>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress" id="progressBar"></div>
-                </div>
-                
-                <div id="savedFilesContainer" class="hidden">
-                    <h3><i class="fas fa-file"></i> File yang Disimpan</h3>
-                    <div class="file-list" id="savedFilesList"></div>
-                </div>
-            </div>
-
-            <div class="stats hidden" id="statsArea">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalCars">0</div>
-                    <div class="stat-label">Total Mobil</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="selectedCars">0</div>
-                    <div class="stat-label">Dipilih</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="injectedCars">0</div>
-                    <div class="stat-label">Di-inject</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="savedCars">0</div>
-                    <div class="stat-label">Disimpan</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="right-panel">
-            <div class="container hidden" id="carListContainer">
-                <h2><i class="fas fa-car"></i> Daftar Mobil</h2>
-                
-                <div class="tabs">
-                    <div class="tab active" data-tab="all">Semua</div>
-                    <div class="tab" data-tab="selected">Dipilih</div>
-                </div>
-                
-                <div class="tab-content active" id="allTab">
-                    <div class="car-list" id="carList"></div>
-                </div>
-                
-                <div class="tab-content" id="selectedTab">
-                    <div class="car-list" id="selectedCarList"></div>
-                </div>
-                
-                <div class="action-buttons">
-                    <button id="injectSelectedButton" class="success">
-                        <span class="button-text"><i class="fas fa-upload"></i> Inject Terpilih</span>
-                        <div class="loading-spinner"></div>
-                    </button>
-                    <button id="selectAllButton" class="secondary">
-                        <span class="button-text"><i class="fas fa-check-square"></i> Pilih Semua</span>
-                        <div class="loading-spinner"></div>
-                    </button>
-                    <button id="deselectAllButton" class="secondary">
-                        <span class="button-text"><i class="fas fa-square"></i> Hapus Pilihan</span>
-                        <div class="loading-spinner"></div>
-                    </button>
-                </div>
-            </div>
-
-            <div class="container hidden" id="kingContainer">
-                <h2><i class="fas fa-crown"></i> Inject King</h2>
-                
-                <button id="injectKingButton" class="warning" style="width: 100%; margin-top: 1rem;">
-                    <span class="button-text"><i class="fas fa-crown"></i> Inject King (Auto)</span>
-                    <div class="loading-spinner"></div>
-                </button>
-                
-                <div class="progress-bar">
-                    <div class="progress" id="kingProgressBar"></div>
-                </div>
-            </div>
-
-            <div class="container hidden" id="debugContainer">
-                <h2><i class="fas fa-bug"></i> Debug Info</h2>
-                <div class="debug-info" id="debugInfo"></div>
-            </div>
-        </div>
-    </main>
-
-    <footer>
-        <p>&copy; 2023 SAI7 STORE - Game API Tools. All rights reserved.</p>
-    </footer>
-
-    <!-- Admin Info -->
-    <div class="admin-info">
-        <div class="admin-avatar">
-            <i class="fas fa-user"></i>
-        </div>
-        <div class="admin-details">
-            <h3>Admin / Pembuat</h3>
-            <p>Telegram: <a href="https://t.me/ESPO_STORE" target="_blank">@ESPO_STORE</a></p>
-        </div>
-    </div>
-
-    <!-- Donation Button -->
-    <a href="https://saweria.co/ESPOSTORE" target="_blank" class="donation-btn">
-        <i class="fas fa-heart"></i>
-        <span>Donasi</span>
-    </a>
-
-    <!-- WhatsApp/Telegram Style Notification Container -->
-    <div class="notification-container" id="notificationContainer"></div>
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Konfigurasi API URL
-            const API_BASE_URL = 'https://espo.my.id';
-            
-            const statusBox = document.getElementById('statusBox');
-            const loginForm = document.getElementById('loginForm');
-            const loginButton = document.getElementById('loginButton');
-            const saveCarsCheckbox = document.getElementById('saveCarsCheckbox');
-            const actionArea = document.getElementById('actionArea');
-            const carListContainer = document.getElementById('carListContainer');
-            const kingContainer = document.getElementById('kingContainer');
-            const carList = document.getElementById('carList');
-            const selectedCarList = document.getElementById('selectedCarList');
-            const fetchCarsButton = document.getElementById('fetchCarsButton');
-            const saveCarsButton = document.getElementById('saveCarsButton');
-            const injectAllButton = document.getElementById('injectAllButton');
-            const injectSelectedButton = document.getElementById('injectSelectedButton');
-            const selectAllButton = document.getElementById('selectAllButton');
-            const deselectAllButton = document.getElementById('deselectAllButton');
-            const injectKingButton = document.getElementById('injectKingButton');
-            const progressBar = document.getElementById('progressBar');
-            const kingProgressBar = document.getElementById('kingProgressBar');
-            const statsArea = document.getElementById('statsArea');
-            const totalCarsElement = document.getElementById('totalCars');
-            const selectedCarsElement = document.getElementById('selectedCars');
-            const injectedCarsElement = document.getElementById('injectedCars');
-            const savedCarsElement = document.getElementById('savedCars');
-            const debugContainer = document.getElementById('debugContainer');
-            const debugInfo = document.getElementById('debugInfo');
-            const connectionStatus = document.getElementById('connectionStatus');
-            const notificationContainer = document.getElementById('notificationContainer');
-            const userInfo = document.getElementById('userInfo');
-            const userEmail = document.getElementById('userEmail');
-            const userAvatar = document.getElementById('userAvatar');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const savedFilesContainer = document.getElementById('savedFilesContainer');
-            const savedFilesList = document.getElementById('savedFilesList');
-            const apiStatus = document.getElementById('apiStatus');
-            
-            // Loading overlay elements
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const loadingText = document.getElementById('loadingText');
-            const loadingProgressBar = document.getElementById('loadingProgressBar');
-            const loadingPercentage = document.getElementById('loadingPercentage');
+        // =================================================================
+        // PENTING: UBAH URL INI dengan URL api.php di website Anda
+        // =================================================================
+        const API_BASE_URL = 'https://espo.my.id/api.php';
+        
+        let isLoggedIn = false;
+        let selectedCars = new Set();
 
-            let idToken = '';
-            let allCarsData = [];
-            let injectedCount = 0;
-            let savedCount = 0;
-            let currentUserEmail = '';
-            let notificationTimeout;
-            let savedFiles = [];
+        // --- Section Navigation ---
+        function showSection(sectionId, navElement) {
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            navElement.classList.add('active');
+        }
 
-            // Tab functionality
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const parent = tab.parentElement;
-                    const parentTabs = parent.querySelectorAll('.tab');
-                    const parentContents = parent.parentElement.querySelectorAll('.tab-content');
-                    
-                    parentTabs.forEach(t => t.classList.remove('active'));
-                    parentContents.forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    
-                    tab.classList.add('active');
-                    document.getElementById(`${tab.dataset.tab}Tab`).classList.add('active');
-                });
-            });
+        // --- UI State Management ---
+        function updateUIState(loggedIn) {
+            isLoggedIn = loggedIn;
+            document.getElementById('info-btn').disabled = !loggedIn;
+            document.getElementById('inject-btn').disabled = !loggedIn || selectedCars.size === 0;
+            document.getElementById('backup-btn').disabled = !loggedIn;
+        }
 
-            // Show WhatsApp/Telegram style notification
-            function showNotification(title, message, type = 'info', duration = 3000) {
-                // Clear any existing timeout
-                if (notificationTimeout) {
-                    clearTimeout(notificationTimeout);
-                }
-                
-                // Remove any existing notification
-                const existingNotification = notificationContainer.querySelector('.notification');
-                if (existingNotification) {
-                    notificationContainer.removeChild(existingNotification);
-                }
-                
-                // Create notification element
-                const notification = document.createElement('div');
-                notification.className = `notification ${type}`;
-                
-                // Set icon based on type
-                let iconClass;
-                if (type === 'success') {
-                    iconClass = 'fa-check-circle';
-                } else if (type === 'error') {
-                    iconClass = 'fa-exclamation-circle';
-                } else {
-                    iconClass = 'fa-info-circle';
-                }
-                
-                notification.innerHTML = `
-                    <div class="notification-icon">
-                        <i class="fas ${iconClass}"></i>
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-title">${title}</div>
-                        <div class="notification-message">${message}</div>
-                    </div>
-                    <button class="notification-close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="notification-progress"></div>
-                `;
-                
-                // Add to container
-                notificationContainer.appendChild(notification);
-                
-                // Add close button event
-                const closeBtn = notification.querySelector('.notification-close');
-                closeBtn.addEventListener('click', () => {
-                    hideNotification(notification);
-                });
-                
-                // Show notification with animation
-                setTimeout(() => {
-                    notification.classList.add('show');
-                }, 10);
-                
-                // Auto hide after duration
-                notificationTimeout = setTimeout(() => {
-                    hideNotification(notification);
-                }, duration);
-            }
-            
-            // Hide notification
-            function hideNotification(notification) {
+        // --- Loading & Notifications ---
+        function showLoading() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+        }
+        function hideLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+        function showNotification(message, type = 'info', duration = 4000) {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `${message}<span class="close-btn" onclick="this.parentElement.remove()">&times;</span>`;
+            container.appendChild(notification);
+
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
                 notification.classList.remove('show');
-                
-                // Remove from DOM after animation completes
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }
+                setTimeout(() => notification.remove(), 400);
+            }, duration);
+        }
 
-            // Update progress bar
-            function updateProgress(percentage, bar = progressBar) {
-                bar.style.width = `${percentage}%`;
-            }
+        // --- Progress Bar ---
+        function showProgressBar(action) {
+            const progressContainer = document.getElementById(`${action}-progress`);
+            const progressFill = document.getElementById(`${action}-progress-fill`);
+            const progressText = document.getElementById(`${action}-progress-text`);
+            
+            progressContainer.style.display = 'block';
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Memproses...';
+            
+            return {
+                update: (percent, text) => {
+                    progressFill.style.width = `${percent}%`;
+                    if (text) progressText.textContent = text;
+                },
+                hide: () => {
+                    progressContainer.style.display = 'none';
+                }
+            };
+        }
 
-            // Update stats
-            function updateStats() {
-                totalCarsElement.textContent = allCarsData.length;
-                selectedCarsElement.textContent = getSelectedCarIds().length;
-                injectedCarsElement.textContent = injectedCount;
-                savedCarsElement.textContent = savedCount;
+        // --- Car Selection Functions ---
+        function toggleCarSelection(carId) {
+            if (selectedCars.has(carId)) {
+                selectedCars.delete(carId);
+            } else {
+                selectedCars.add(carId);
             }
+            updateCarSelectionUI();
+        }
 
-            // Show status
-            function showStatus(message, type = 'info', debugInfo = null) {
-                statusBox.innerHTML = `
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                    <span>${message}</span>
-                `;
-                statusBox.className = `status ${type}`;
-                
-                if (debugInfo) {
-                    debugInfo.textContent = debugInfo;
-                    debugContainer.classList.remove('hidden');
+        function selectAllCars() {
+            const carItems = document.querySelectorAll('#car-list li');
+            carItems.forEach(item => {
+                const carId = item.textContent.replace('Car ID: ', '');
+                selectedCars.add(carId);
+            });
+            updateCarSelectionUI();
+        }
+
+        function clearSelection() {
+            selectedCars.clear();
+            updateCarSelectionUI();
+        }
+
+        function updateCarSelectionUI() {
+            const carItems = document.querySelectorAll('#car-list li');
+            carItems.forEach(item => {
+                const carId = item.textContent.replace('Car ID: ', '');
+                if (selectedCars.has(carId)) {
+                    item.classList.add('selected');
                 } else {
-                    debugContainer.classList.add('hidden');
+                    item.classList.remove('selected');
                 }
-            }
-
-            // Show loading overlay
-            function showLoadingOverlay(text = 'Memproses...') {
-                loadingText.textContent = text;
-                loadingOverlay.classList.add('active');
-                updateLoadingProgress(0);
-            }
-
-            // Hide loading overlay
-            function hideLoadingOverlay() {
-                loadingOverlay.classList.remove('active');
-            }
-
-            // Update loading progress
-            function updateLoadingProgress(percentage) {
-                loadingProgressBar.style.width = `${percentage}%`;
-                loadingPercentage.textContent = `${percentage}%`;
-            }
-
-            // Set button loading state
-            function setButtonLoading(button, isLoading) {
-                if (isLoading) {
-                    button.classList.add('loading');
-                    button.disabled = true;
-                } else {
-                    button.classList.remove('loading');
-                    button.disabled = false;
-                }
-            }
-
-            // Update saved files list
-            function updateSavedFilesList(files) {
-                savedFilesList.innerHTML = '';
-                
-                if (files.length === 0) {
-                    savedFilesList.innerHTML = '<div class="file-item">Tidak ada file yang disimpan</div>';
-                    return;
-                }
-                
-                files.forEach(file => {
-                    const fileItem = document.createElement('div');
-                    fileItem.className = 'file-item';
-                    
-                    // Extract filename from full path
-                    const filename = file.split('/').pop();
-                    
-                    fileItem.innerHTML = `
-                        <i class="fas fa-file"></i>
-                        <span>${filename}</span>
-                    `;
-                    savedFilesList.appendChild(fileItem);
-                });
-            }
-
-            // Check API status
-            function checkApiStatus() {
-                fetch(`${API_BASE_URL}/api_cpm.php`, { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'ping' })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        apiStatus.classList.remove('offline');
-                        apiStatus.classList.add('online');
-                        apiStatus.innerHTML = `
-                            <i class="fas fa-circle"></i>
-                            <span>API: https://espo.my.id (Online)</span>
-                        `;
-                    } else {
-                        throw new Error('API not responding');
-                    }
-                })
-                .catch(error => {
-                    apiStatus.classList.remove('online');
-                    apiStatus.classList.add('offline');
-                    apiStatus.innerHTML = `
-                        <i class="fas fa-circle"></i>
-                        <span>API: https://espo.my.id (Offline)</span>
-                    `;
-                });
-            }
-
-            // Check connection status
-            function checkConnectionStatus() {
-                fetch('https://www.googleapis.com', { mode: 'no-cors' })
-                    .then(() => {
-                        connectionStatus.classList.remove('offline');
-                        connectionStatus.innerHTML = `
-                            <i class="fas fa-circle"></i>
-                            <span>Online</span>
-                        `;
-                    })
-                    .catch(() => {
-                        connectionStatus.classList.add('offline');
-                        connectionStatus.innerHTML = `
-                            <i class="fas fa-circle"></i>
-                            <span>Offline</span>
-                        `;
-                    });
-            }
-
-            // Check connection every 5 seconds
-            setInterval(checkConnectionStatus, 5000);
-            setInterval(checkApiStatus, 10000); // Check API status every 10 seconds
-            checkConnectionStatus();
-            checkApiStatus();
-
-            // Update user info
-            function updateUserInfo(email) {
-                currentUserEmail = email;
-                userEmail.textContent = email;
-                userAvatar.textContent = email.charAt(0).toUpperCase();
-                userInfo.classList.remove('hidden');
-            }
-
-            // Logout function
-            function logout() {
-                idToken = '';
-                currentUserEmail = '';
-                allCarsData = [];
-                injectedCount = 0;
-                savedCount = 0;
-                savedFiles = [];
-                
-                // Reset UI
-                loginForm.classList.remove('hidden');
-                actionArea.classList.add('hidden');
-                carListContainer.classList.add('hidden');
-                kingContainer.classList.add('hidden');
-                statsArea.classList.add('hidden');
-                savedFilesContainer.classList.add('hidden');
-                userInfo.classList.add('hidden');
-                
-                // Reset form
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
-                saveCarsCheckbox.checked = true;
-                
-                showStatus('Anda telah keluar. Silakan login kembali.', 'info');
-                showNotification('Info', 'Anda telah keluar. Silakan login kembali.', 'info');
-            }
-
-            async function callApi(action, data = {}) {
-                try {
-                    const isLoginAction = action === 'login';
-                    const response = await fetch(`${API_BASE_URL}/api_cpm.php`, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': isLoginAction ? 'application/x-www-form-urlencoded' : 'application/json'
-                        },
-                        body: isLoginAction 
-                            ? new URLSearchParams({ action, ...data })
-                            : JSON.stringify({ action, ...data })
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (!result.success && result.debug) {
-                        showStatus(result.message, 'error', result.debug);
-                    } else {
-                        showStatus(result.message, result.success ? 'success' : 'error');
-                    }
-                    
-                    return result;
-                } catch (error) {
-                    showStatus(`Network error: ${error.message}`, 'error');
-                    return { success: false, message: `Network error: ${error.message}` };
-                }
-            }
-
-            async function callKingApi(data) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/rank_king.php`, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    
-                    // Cek jika respons adalah HTML (bukan JSON)
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        const text = await response.text();
-                        console.error('Server returned non-JSON response:', text);
-                        
-                        // Coba ekstrak pesan error dari HTML
-                        let errorMessage = 'Server error: Unexpected response format';
-                        if (text.includes('<title>')) {
-                            const titleMatch = text.match(/<title>(.*?)<\/title>/);
-                            if (titleMatch && titleMatch[1]) {
-                                errorMessage = `Server error: ${titleMatch[1]}`;
-                            }
-                        }
-                        
-                        showStatus(errorMessage, 'error');
-                        return { ok: false, error: errorMessage, html: text };
-                    }
-                    
-                    const result = await response.json();
-                    
-                    if (!result.ok && result.error) {
-                        showStatus(result.error, 'error');
-                    } else {
-                        showStatus(result.message || 'King berhasil di-inject!', result.ok ? 'success' : 'error');
-                    }
-                    
-                    return result;
-                } catch (error) {
-                    console.error('Network error:', error);
-                    showStatus(`Network error: ${error.message}`, 'error');
-                    return { ok: false, error: `Network error: ${error.message}` };
-                }
-            }
-
-            // Event Listeners
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const saveCars = saveCarsCheckbox.checked;
-                
-                setButtonLoading(loginButton, true);
-                showLoadingOverlay('Sedang login...');
-                updateLoadingProgress(30);
-                
-                const result = await callApi('login', { email, password, saveCars });
-                updateLoadingProgress(100);
-                
-                setTimeout(() => {
-                    hideLoadingOverlay();
-                    setButtonLoading(loginButton, false);
-                    
-                    if (result.success) {
-                        idToken = result.idToken;
-                        updateUserInfo(email);
-                        
-                        // Check if cars were saved during login
-                        if (result.carsSaved) {
-                            savedCount += result.savedCount || 0;
-                            if (result.savedFiles && result.savedFiles.length > 0) {
-                                savedFiles = result.savedFiles;
-                                updateSavedFilesList(savedFiles);
-                                savedFilesContainer.classList.remove('hidden');
-                            }
-                            showStatus('✅ Login Berhasil! Data mobil telah disimpan.', 'success');
-                            showNotification('Login Berhasil', 'Data mobil telah disimpan ke folder cpm/cars/livery', 'success');
-                        } else {
-                            showStatus('✅ Login Berhasil! Selamat datang di SAI7 STORE.', 'success');
-                            showNotification('Login Berhasil', 'Selamat datang di SAI7 STORE', 'success');
-                        }
-                        
-                        loginForm.classList.add('hidden');
-                        actionArea.classList.remove('hidden');
-                        statsArea.classList.remove('hidden');
-                        kingContainer.classList.remove('hidden');
-                        updateProgress(0);
-                        updateStats();
-                    } else {
-                        showNotification('Login Gagal', result.message || 'Terjadi kesalahan saat login', 'error');
-                    }
-                }, 500);
-            });
-
-            logoutBtn.addEventListener('click', logout);
-
-            fetchCarsButton.addEventListener('click', async () => {
-                if (!idToken) {
-                    showStatus('Error: Token tidak ditemukan. Silakan login ulang.', 'error');
-                    return;
-                }
-                
-                setButtonLoading(fetchCarsButton, true);
-                showLoadingOverlay('Mengambil data mobil...');
-                updateLoadingProgress(30);
-                
-                const result = await callApi('getCars', { idToken });
-                updateLoadingProgress(100);
-                
-                setTimeout(() => {
-                    hideLoadingOverlay();
-                    setButtonLoading(fetchCarsButton, false);
-                    
-                    if (result.success) {
-                        allCarsData = result.cars;
-                        renderCarList(allCarsData);
-                        carListContainer.classList.remove('hidden');
-                        showStatus(`Berhasil mengambil ${allCarsData.length} mobil. Silakan pilih mobil untuk di-inject.`, 'success');
-                        showNotification('Data Berhasil Diambil', `Berhasil mengambil ${allCarsData.length} mobil`, 'success');
-                        updateStats();
-                    } else {
-                        showNotification('Gagal Mengambil Data', result.message || 'Terjadi kesalahan saat mengambil data', 'error');
-                    }
-                    
-                    updateProgress(0);
-                }, 500);
-            });
-
-            // New Save Cars Button
-            saveCarsButton.addEventListener('click', async () => {
-                if (!idToken) {
-                    showStatus('Error: Token tidak ditemukan. Silakan login ulang.', 'error');
-                    return;
-                }
-                
-                setButtonLoading(saveCarsButton, true);
-                showLoadingOverlay('Menyimpan data mobil...');
-                updateLoadingProgress(30);
-                
-                const result = await callApi('saveCars', { idToken, email: currentUserEmail });
-                updateLoadingProgress(100);
-                
-                setTimeout(() => {
-                    hideLoadingOverlay();
-                    setButtonLoading(saveCarsButton, false);
-                    
-                    if (result.success) {
-                        savedCount += result.saved_count || 0;
-                        if (result.saved_files && result.saved_files.length > 0) {
-                            savedFiles = result.saved_files;
-                            updateSavedFilesList(savedFiles);
-                            savedFilesContainer.classList.remove('hidden');
-                        }
-                        showStatus(`Data mobil berhasil disimpan. Path: ${result.path}`, 'success');
-                        showNotification('Data Berhasil Disimpan', `${result.saved_count || 0} mobil berhasil disimpan ke folder cpm/cars/livery`, 'success');
-                        updateStats();
-                    } else {
-                        showNotification('Gagal Menyimpan Data', result.message || 'Terjadi kesalahan saat menyimpan data', 'error');
-                    }
-                    
-                    updateProgress(0);
-                }, 500);
-            });
-
-            injectAllButton.addEventListener('click', async () => {
-                if (!idToken) {
-                    showStatus('Error: Token tidak ditemukan. Silakan login ulang.', 'error');
-                    return;
-                }
-                
-                setButtonLoading(injectAllButton, true);
-                showLoadingOverlay('Meng-inject semua livery...');
-                updateLoadingProgress(30);
-                
-                const result = await callApi('injectAll', { idToken });
-                updateLoadingProgress(100);
-                
-                setTimeout(() => {
-                    hideLoadingOverlay();
-                    setButtonLoading(injectAllButton, false);
-                    
-                    if (result.success) {
-                        injectedCount += parseInt(result.message.match(/\d+/)[0]);
-                        updateStats();
-                        showNotification('Inject Berhasil', 'Semua livery berhasil di-inject', 'success');
-                    } else {
-                        showNotification('Inject Gagal', result.message || 'Terjadi kesalahan saat inject', 'error');
-                    }
-                    
-                    updateProgress(0);
-                }, 500);
-            });
-
-            injectSelectedButton.addEventListener('click', async () => {
-                const selectedCarIds = getSelectedCarIds();
-                if (selectedCarIds.length === 0) {
-                    showStatus('Tidak ada mobil yang dipilih.', 'error');
-                    return;
-                }
-                
-                setButtonLoading(injectSelectedButton, true);
-                showLoadingOverlay(`Meng-inject ${selectedCarIds.length} livery terpilih...`);
-                updateLoadingProgress(30);
-                
-                const result = await callApi('injectSelected', { idToken, selectedCarIds });
-                updateLoadingProgress(100);
-                
-                setTimeout(() => {
-                    hideLoadingOverlay();
-                    setButtonLoading(injectSelectedButton, false);
-                    
-                    if (result.success) {
-                        injectedCount += parseInt(result.message.match(/\d+/)[0]);
-                        updateStats();
-                        showNotification('Inject Berhasil', `${selectedCarIds.length} livery terpilih berhasil di-inject`, 'success');
-                    } else {
-                        showNotification('Inject Gagal', result.message || 'Terjadi kesalahan saat inject', 'error');
-                    }
-                    
-                    updateProgress(0);
-                }, 500);
-            });
-
-            // Inject King (Auto) - Menggunakan email yang sudah login
-            injectKingButton.addEventListener('click', async () => {
-                if (!currentUserEmail) {
-                    showStatus('Error: Tidak ada pengguna yang login. Silakan login ulang.', 'error');
-                    return;
-                }
-                
-                setButtonLoading(injectKingButton, true);
-                showLoadingOverlay('Meng-inject King (Auto)...');
-                updateLoadingProgress(30);
-                
-                // Kirim email yang sudah login, tanpa password
-                const result = await callApi('injectKing', { 
-                    email: currentUserEmail,
-                    useExistingToken: true
-                });
-                updateLoadingProgress(100);
-                
-                setTimeout(() => {
-                    hideLoadingOverlay();
-                    setButtonLoading(injectKingButton, false);
-                    
-                    if (result.success) {
-                        showNotification('Inject King Berhasil', 'King berhasil di-inject', 'success');
-                    } else {
-                        showNotification('Inject King Gagal', result.message || 'Terjadi kesalahan saat inject King', 'error');
-                    }
-                    
-                    updateKingProgress(0);
-                }, 500);
             });
             
-            selectAllButton.addEventListener('click', () => {
-                const checkboxes = carList.querySelectorAll('input[type="checkbox"]');
-                checkboxes.forEach(cb => cb.checked = true);
-                updateSelectedCarList();
-                updateStats();
-            });
+            document.getElementById('selection-info').textContent = `${selectedCars.size} mobil dipilih`;
+            document.getElementById('inject-btn').disabled = !isLoggedIn || selectedCars.size === 0;
+        }
 
-            deselectAllButton.addEventListener('click', () => {
-                const checkboxes = carList.querySelectorAll('input[type="checkbox"]');
-                checkboxes.forEach(cb => cb.checked = false);
-                updateSelectedCarList();
-                updateStats();
-            });
-
-            function renderCarList(cars) {
-                carList.innerHTML = '';
-                cars.forEach(car => {
-                    const carItem = document.createElement('div');
-                    carItem.className = 'car-item';
-                    
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.id = `car-${car.CarID}`;
-                    checkbox.value = car.CarID;
-                    checkbox.addEventListener('change', updateSelectedCarList);
-                    
-                    const label = document.createElement('label');
-                    label.htmlFor = `car-${car.CarID}`;
-                    label.textContent = `${car.CarID} - ${car.CarName || 'Tanpa Nama'}`;
-                    
-                    carItem.appendChild(checkbox);
-                    carItem.appendChild(label);
-                    carList.appendChild(carItem);
-                });
-            }
-
-            function updateSelectedCarList() {
-                const selectedCarIds = getSelectedCarIds();
-                selectedCarList.innerHTML = '';
-                
-                if (selectedCarIds.length === 0) {
-                    selectedCarList.innerHTML = '<div class="car-item">Tidak ada mobil yang dipilih</div>';
-                    return;
+        // --- API CALLS ---
+        async function apiCall(action, data = {}) {
+            showLoading();
+            try {
+                const formData = new FormData();
+                formData.append('action', action);
+                for (const key in data) {
+                    formData.append(key, data[key]);
                 }
-                
-                selectedCarIds.forEach(carId => {
-                    const car = allCarsData.find(c => c.CarID === carId);
-                    if (!car) return;
-                    
-                    const carItem = document.createElement('div');
-                    carItem.className = 'car-item';
-                    carItem.innerHTML = `
-                        <i class="fas fa-check-circle" style="color: var(--success-color); margin-right: 10px;"></i>
-                        <span>${car.CarID} - ${car.CarName || 'Tanpa Nama'}</span>
-                    `;
-                    selectedCarList.appendChild(carItem);
-                });
-                
-                updateStats();
-            }
 
-            function getSelectedCarIds() {
-                const checkboxes = carList.querySelectorAll('input[type="checkbox"]:checked');
-                return Array.from(checkboxes).map(cb => cb.value);
+                const response = await fetch(API_BASE_URL, { method: 'POST', body: formData });
+                if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+                
+                const result = await response.json();
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                } else {
+                    showNotification(result.message || result.error || 'Terjadi kesalahan.', 'error');
+                }
+                return result;
+            } catch (error) {
+                console.error('API Call Error:', error);
+                showNotification('Terjadi kesalahan jaringan atau server.', 'error');
+                return { success: false };
+            } finally {
+                hideLoading();
             }
+        }
 
-            function updateKingProgress(percentage) {
-                kingProgressBar.style.width = `${percentage}%`;
+        // --- HANDLERS ---
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            if (!email || !password) {
+                showNotification('Email dan password wajib diisi.', 'error');
+                return;
             }
+            const result = await apiCall('login', { email, password });
+            if (result.success) {
+                updateUIState(true);
+            }
+        }
+
+        async function handleBackup() {
+            const progressBar = showProgressBar('backup');
+            await apiCall('backup_only');
+            progressBar.update(100, 'Selesai');
+            setTimeout(() => progressBar.hide(), 2000);
+        }
+
+        async function loadLiveryFiles() {
+            const result = await apiCall('get_local_cars');
+            if (result.success) {
+                const carListDiv = document.getElementById('car-list');
+                carListDiv.innerHTML = result.cars.map(id => `<li onclick="toggleCarSelection('${id}')">Car ID: ${id}</li>`).join('');
+                carListDiv.style.display = 'grid';
+                document.getElementById('car-selection-controls').style.display = 'flex';
+                selectedCars.clear();
+                updateCarSelectionUI();
+            } else {
+                document.getElementById('car-list').style.display = 'none';
+                document.getElementById('car-selection-controls').style.display = 'none';
+            }
+        }
+        
+        async function applyInjectLiveryToServer(selectedLiveryIds) {
+            showNotification(`Sedang menginject ${selectedLiveryIds.length} mobil ke server. Proses ini bisa memakan waktu lama, mohon tetap tunggu...`, 'info', 20000);
+            
+            const progressBar = showProgressBar('inject');
+            const result = await apiCall('inject_livery', { selectedLiveryIds: JSON.stringify(selectedLiveryIds) });
+            
+            progressBar.update(100, 'Selesai');
+            setTimeout(() => progressBar.hide(), 2000);
+
+            if (result.success) {
+                loadLiveryFiles(); 
+            }
+        }
+
+        async function handleInjectLivery() {
+            if (selectedCars.size === 0) {
+                showNotification('Pilih setidaknya satu mobil untuk di-inject.', 'error');
+                return;
+            }
+            await applyInjectLiveryToServer(Array.from(selectedCars));
+        }
+
+        async function handleInjectKing() {
+            const email = document.getElementById('king-email').value;
+            const password = document.getElementById('king-password').value;
+            if (!email || !password) {
+                showNotification('Email dan password wajib diisi.', 'error');
+                return;
+            }
+            await apiCall('inject_king', { email, password });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUIState(false);
         });
     </script>
 </body>
